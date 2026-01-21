@@ -1,0 +1,8 @@
+@import 'tailwindcss';
+
+@theme {
+    --color-background: hsla(0, 0%, 98%, 1);
+    --color-accent: #0685c9;
+    --color-secondary: hsla(137, 64%, 43%, 0.3);
+    --color-primary: hsla(137, 64%, 43%, 1);
+}
