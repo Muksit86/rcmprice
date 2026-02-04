@@ -2,17 +2,19 @@ import React, { useState, useEffect } from "react";
 import SearchBar from "../components/SearchBar";
 import ProductList from "../components/ProductList";
 import priceData from "../data/Price-List.json";
+import priceData_v2 from "../data/Price_List_v2.json";
 
 const Search = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [filteredProducts, setFilteredProducts] = useState(priceData);
+  const [filteredProducts, setFilteredProducts] = useState(priceData_v2);
+  const [selectedBrand, setSelectedBrand] = useState("");
   const [sortBy, setSortBy] = useState("name");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     setLoading(true);
     const timer = setTimeout(() => {
-      let results = [...priceData];
+      let results = [...priceData_v2];
 
       // Filter by search query
       if (searchQuery.trim()) {
@@ -48,16 +50,26 @@ const Search = () => {
           break;
       }
 
+      if (selectedBrand) {
+        results = results.filter(
+          (product) => product["Brand Name"] === selectedBrand,
+        );
+      }
+
       setFilteredProducts(results);
       setLoading(false);
     }, 300);
 
     return () => clearTimeout(timer);
-  }, [searchQuery, sortBy]);
+  }, [searchQuery, sortBy, selectedBrand]);
 
   const handleClear = () => {
     setSearchQuery("");
   };
+
+  const uniqueBrands = React.useMemo(() => {
+    return [...new Set(priceData_v2.map((product) => product["Brand Name"]))];
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -72,13 +84,28 @@ const Search = () => {
           </p>
 
           {/* Search Bar */}
-          <div className="max-w-2xl mb-6">
+          <div className="max-w-2xl mb-6 flex items-center gap-5">
             <SearchBar
               value={searchQuery}
               onChange={setSearchQuery}
               onClear={handleClear}
               placeholder="Search products..."
             />
+
+            <div className="border-black border-2 rounded-md bg-blue-100 px-4 py-2">
+              <select
+                className="focus:outline-0"
+                value={selectedBrand}
+                onChange={(e) => setSelectedBrand(e.target.value)}
+              >
+                <option value="">Brand Name</option>
+                {uniqueBrands.map((brand) => (
+                  <option key={brand} value={brand}>
+                    {brand}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
 
           {/* Sort Options */}
@@ -89,37 +116,41 @@ const Search = () => {
             <div className="flex px-2 gap-5 overflow-scroll md:overflow-hidden">
               <button
                 onClick={() => setSortBy("name")}
-                className={`cursor-pointer py-2 text-nowrap text-md font-medium transition-colors ${sortBy === "name"
-                  ? "border-b-2 text-accent"
-                  : " text-gray-700 hover:bg-gray-50"
-                  }`}
+                className={`cursor-pointer py-2 text-nowrap text-md font-medium transition-colors ${
+                  sortBy === "name"
+                    ? "border-b-2 text-accent"
+                    : " text-gray-700 hover:bg-gray-50"
+                }`}
               >
                 Name (A-Z)
               </button>
               <button
                 onClick={() => setSortBy("price-low")}
-                className={`cursor-pointer py-2 text-nowrap text-md font-medium transition-colors ${sortBy === "price-low"
-                  ? "border-b-2 text-accent"
-                  : " text-gray-700 hover:bg-gray-50"
-                  }`}
+                className={`cursor-pointer py-2 text-nowrap text-md font-medium transition-colors ${
+                  sortBy === "price-low"
+                    ? "border-b-2 text-accent"
+                    : " text-gray-700 hover:bg-gray-50"
+                }`}
               >
                 Price: Low to High
               </button>
               <button
                 onClick={() => setSortBy("price-high")}
-                className={`cursor-pointer py-2 text-nowrap text-md font-medium transition-colors ${sortBy === "price-high"
-                  ? "border-b-2 text-accent"
-                  : " text-gray-700 hover:bg-gray-50"
-                  }`}
+                className={`cursor-pointer py-2 text-nowrap text-md font-medium transition-colors ${
+                  sortBy === "price-high"
+                    ? "border-b-2 text-accent"
+                    : " text-gray-700 hover:bg-gray-50"
+                }`}
               >
                 Price: High to Low
               </button>
               <button
                 onClick={() => setSortBy("discount")}
-                className={`cursor-pointer py-2 text-nowrap text-md font-medium transition-colors ${sortBy === "discount"
-                  ? "border-b-2 text-accent"
-                  : "text-gray-700 hover:bg-gray-50"
-                  }`}
+                className={`cursor-pointer py-2 text-nowrap text-md font-medium transition-colors ${
+                  sortBy === "discount"
+                    ? "border-b-2 text-accent"
+                    : "text-gray-700 hover:bg-gray-50"
+                }`}
               >
                 Best Discount
               </button>

@@ -26,6 +26,10 @@ const ProductCard = ({ product }) => {
             {product["Article ID"]}
           </span>
         </div>
+        <div className="flex justify-between">
+          <span>PV:</span>
+          <span className="font-medium text-gray-900">{product["PV"]}</span>
+        </div>
       </div>
 
       {/* Price Section */}
